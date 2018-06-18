@@ -5,50 +5,31 @@ public class Line {
 
     public static String Tickets(int[] peopleInLine)
     {
-        Register register = new Register();
+        int numOf25Bills = 0;
+        int numOf50Bills = 0;
         for (int buyer : peopleInLine){
+            if (buyer == 25){
+                numOf25Bills++;
+            }
             if (buyer == 50){
-                if (register.haveBills(25,1)){
-                    register.takeBills(25,1);
-                } else {
+                numOf25Bills--;
+                if (numOf25Bills < 0){
                     return "NO";
                 }
+                numOf50Bills++;
             }
             if (buyer == 100){
-                if (register.haveBills(50,1) && register.haveBills(25,1)){
-                    register.takeBills(25,1);
-                    register.takeBills(50,1);
-                } else if (register.haveBills(25, 3)){
-                    register.takeBills(25, 3);
+                if (numOf25Bills > 2){
+                    numOf25Bills -= 3;
                 } else {
-                    return "NO";
+                    numOf25Bills--;
+                    numOf50Bills--;
+                    if (numOf25Bills < 0 || numOf50Bills < 0){
+                        return "NO";
+                    }
                 }
             }
-            register.addBill(buyer);
         }
         return "YES";
-    }
-
-    public static class Register {
-        private Map<Integer, Integer> amountByValue;
-
-        public Register(){ amountByValue = new HashMap<>(); }
-
-        public void addBill(int value){
-            Integer numOfBills = amountByValue.getOrDefault(value, 0);
-            amountByValue.put(value, ++numOfBills);
-        }
-
-        public boolean haveBills(int value, int amount){
-            Integer numOfBills = amountByValue.get(value);
-            return numOfBills != null && numOfBills >= amount;
-        }
-
-        public void takeBills(int value, int amount){
-            Integer numOfBills = amountByValue.get(value);
-            amountByValue.put(value, numOfBills - amount);
-        }
-
-
     }
 }
